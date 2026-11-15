@@ -32,6 +32,9 @@ The demo opens its WebXR preview and draws each tracked joint around a slowly
 turning outline shape. Pinch near the shape and move your hand to rotate it; it keeps
 spinning briefly on release. A light casts its shadow onto the floor below.
 The tracked joint dots cast shadows there too, to make their depth easier to read.
+Drag the controls by their header on desktop. Use **Move video to scene** to
+put the camera feed on a card behind the shape, or **Dock video** to bring it
+back to the panel. The **Video opacity** slider adjusts either view.
 **Stop webcam** releases the camera. Moving a hand toward the webcam
 pushes its virtual hand toward the scene. The **Distance** slider shifts the
 virtual hands toward or away from the scene for different camera setups.

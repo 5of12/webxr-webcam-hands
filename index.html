@@ -4,53 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>WebXR webcam hands</title>
-    <style>
-      @media (max-width: 600px) {
-        main {
-          top: calc(env(safe-area-inset-top) + 112px) !important;
-          right: 16px;
-        }
-        aside[aria-label="Webcam hand tracking"] {
-          box-sizing: border-box;
-          top: calc(env(safe-area-inset-top) + 10px) !important;
-          bottom: auto !important;
-          left: 12px !important;
-          right: 12px !important;
-          display: grid !important;
-          grid-template-columns: max-content minmax(0, 1fr) 72px;
-          grid-template-areas: "action state camera" "distance distance camera";
-          gap: 6px 8px !important;
-        }
-        aside[aria-label="Webcam hand tracking"] > button {
-          grid-area: action;
-          min-height: 44px;
-          white-space: nowrap;
-        }
-        aside[aria-label="Webcam hand tracking"] > [role="status"] {
-          grid-area: state;
-          white-space: nowrap;
-        }
-        aside[aria-label="Webcam hand tracking"] > label {
-          grid-area: distance;
-          min-width: 0;
-        }
-        aside[aria-label="Webcam hand tracking"] > label > input {
-          flex: 1;
-          min-width: 0;
-          width: auto !important;
-        }
-        aside[aria-label="Webcam hand tracking"] > video {
-          grid-area: camera;
-          width: 72px !important;
-          height: 72px !important;
-        }
-      }
-    </style>
   </head>
   <body>
     <main>
       <h1>WebXR webcam hands</h1>
-      <p>Start the webcam to see your hands. Pinch near the shape and move your hand to turn it.</p>
+      <p>Start the webcam to see your hands. Pinch near the shape to turn it, or move the video into the scene.</p>
       <p id="session-status" role="status"></p>
     </main>
     <script type="module" src="/src/demo.ts"></script>

@@ -15,6 +15,19 @@ test('synthetic joints become a WebXR hand in the standalone demo', async ({ pag
   await expect.poll(() => page.evaluate(() => !!(window as Window & {
     __webcamXR?: { device: { activeSession?: XRSession } };
   }).__webcamXR?.device.activeSession)).toBe(true);
+  await page.getByRole('button', { name: 'Move video to scene' }).click();
+  await expect.poll(() => page.evaluate(() => (window as Window & {
+    __demoVideoCard?: { group: { visible: boolean } };
+  }).__demoVideoCard?.group.visible)).toBe(true);
+  await page.getByRole('slider', { name: 'Video opacity' }).fill('0.25');
+  await expect.poll(() => page.evaluate(() => (window as Window & {
+    __demoVideoCard?: { material: { opacity: number } };
+  }).__demoVideoCard?.material.opacity)).toBe(0.25);
+  await page.getByRole('button', { name: 'Dock video' }).click();
+  await expect(page.locator('.demo-controls video')).toHaveCSS('opacity', '0.25');
+  await expect.poll(() => page.evaluate(() => (window as Window & {
+    __demoVideoCard?: { group: { visible: boolean } };
+  }).__demoVideoCard?.group.visible)).toBe(false);
 
   await page.evaluate(() => {
     const xr = (window as Window & { __webcamXR?: {
@@ -78,7 +91,29 @@ test('mobile camera controls stay above the scene', async ({ page }) => {
   expect(panel).not.toBeNull();
   expect(main).not.toBeNull();
   expect(panel!.y + panel!.height).toBeLessThan(main!.y);
-  expect(panel!.y + panel!.height).toBeLessThan(180);
+  expect(panel!.y + panel!.height).toBeLessThan(230);
   expect(panel!.x).toBeGreaterThanOrEqual(0);
   expect(panel!.x + panel!.width).toBeLessThanOrEqual(393);
+  await page.getByRole('button', { name: 'Move video to scene' }).click();
+  const cardModePanel = await page.getByLabel('Webcam hand tracking').boundingBox();
+  expect(cardModePanel!.y + cardModePanel!.height).toBeLessThan(main!.y);
+});
+
+test('desktop controls can be dragged without moving the scene', async ({ page }) => {
+  await page.goto('/');
+  const panel = page.getByLabel('Webcam hand tracking');
+  const before = await panel.boundingBox();
+  const handle = await page.getByRole('button', { name: 'Drag webcam controls' }).boundingBox();
+  expect(before).not.toBeNull();
+  expect(handle).not.toBeNull();
+  await page.mouse.move(handle!.x + 30, handle!.y + handle!.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(handle!.x - 90, handle!.y + 60, { steps: 5 });
+  await page.mouse.up();
+  const after = await panel.boundingBox();
+  expect(after!.x).toBeLessThan(before!.x - 80);
+  expect(after!.y).toBeGreaterThan(before!.y + 40);
+  await page.getByRole('button', { name: 'Drag webcam controls' }).press('ArrowLeft');
+  const nudged = await panel.boundingBox();
+  expect(nudged!.x).toBeLessThan(after!.x);
 });

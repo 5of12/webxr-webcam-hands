@@ -2,14 +2,10 @@ import * as THREE from 'three';
 import { installWebcamXR, JOINT_NAMES } from './index';
 import { DemoPinch } from './demo-pinch';
 import { createDemoScene } from './demo-scene';
+import { DemoVideoCard } from './demo-video-card';
+import { mountDemoControls } from './demo-controls';
+import './demo.css';
 
-document.body.style.cssText = 'margin:0;background:#0d0f13;color:#fff;font:15px system-ui;overflow:hidden';
-const main = document.querySelector('main')!;
-main.style.cssText = 'position:fixed;left:20px;top:16px;z-index:2;max-width:340px';
-const title = main.querySelector('h1')!;
-title.style.cssText = 'font-size:20px;font-weight:600;margin:0 0 8px';
-const intro = main.querySelector('p')!;
-intro.style.cssText = 'color:#aeb6c1;line-height:1.5;margin:0 0 14px';
 const status = document.querySelector('#session-status')!;
 status.setAttribute('aria-live', 'polite');
 status.setAttribute('hidden', '');
@@ -82,10 +78,15 @@ async function startPreview(): Promise<void> {
   }
 }
 
+let videoCard: DemoVideoCard;
 installWebcamXR({
-  onStarted: () => { void startPreview(); },
-  onStopped: () => { void renderer.xr.getSession()?.end(); },
+  onStarted: () => { videoCard.setActive(true); void startPreview(); },
+  onStopped: () => { videoCard.setActive(false); void renderer.xr.getSession()?.end(); },
 });
+const panel = document.querySelector<HTMLElement>('aside[aria-label="Webcam hand tracking"]')!;
+videoCard = new DemoVideoCard(scene, panel.querySelector('video')!);
+mountDemoControls(panel, videoCard);
+if (import.meta.env.DEV) (window as Window & { __demoVideoCard?: DemoVideoCard }).__demoVideoCard = videoCard;
 
 renderer.setAnimationLoop((time, frame) => {
   const dt = lastFrameTime ? (time - lastFrameTime) / 1000 : 0;
