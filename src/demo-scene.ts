@@ -24,6 +24,7 @@ export function createDemoScene(renderer: THREE.WebGLRenderer): { scene: THREE.S
   key.shadow.camera.far = 7;
   key.shadow.bias = -0.0002;
   key.shadow.radius = 3;
+  key.shadow.intensity = 0.4;
   scene.add(key, key.target);
 
   const fill = new THREE.PointLight(0x69a7ef, 9, 3);
@@ -52,6 +53,7 @@ export class DemoTarget {
   readonly material = new THREE.MeshStandardMaterial({
     color: 0x8dd9e7, metalness: 0.25, roughness: 0.34, flatShading: true,
     emissive: 0x33647b, emissiveIntensity: 0.22,
+    transparent: true, opacity: 0.12, depthWrite: false, side: THREE.DoubleSide,
   });
   activeHand = -1;
   private readonly lastPoint = new THREE.Vector3();
@@ -59,14 +61,15 @@ export class DemoTarget {
 
   constructor(scene: THREE.Scene) {
     this.group.name = 'DemoTarget';
-    this.group.position.set(0, 1.35, -0.6);
+    this.group.position.set(0, 1.35, -0.85);
     this.group.rotation.x = 0.2;
-    const shape = new THREE.Mesh(new THREE.IcosahedronGeometry(0.19, 1), this.material);
+    const geometry = new THREE.IcosahedronGeometry(0.16, 1);
+    const shape = new THREE.Mesh(geometry, this.material);
     shape.castShadow = true;
     this.group.add(shape);
     const edges = new THREE.LineSegments(
-      new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(0.192, 0)),
-      new THREE.LineBasicMaterial({ color: 0xd9f4ff, transparent: true, opacity: 0.35 }),
+      new THREE.WireframeGeometry(geometry),
+      new THREE.LineBasicMaterial({ color: 0xd9f4ff, transparent: true, opacity: 0.65, depthWrite: false }),
     );
     this.group.add(edges);
     scene.add(this.group);
