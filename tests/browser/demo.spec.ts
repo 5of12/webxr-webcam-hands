@@ -4,6 +4,7 @@ test('synthetic joints become a WebXR hand in the standalone demo', async ({ pag
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
+  await expect(page.getByRole('slider', { name: 'Distance' })).toBeVisible();
   await page.getByRole('button', { name: 'Enter VR' }).click();
   await expect(page.locator('#session-status')).toHaveText('VR live');
 

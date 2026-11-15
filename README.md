@@ -29,8 +29,10 @@ npm run dev
 
 Open `http://127.0.0.1:5174/`. Click **Start webcam**, allow camera access,
 then **Enter VR**. The demo draws each tracked WebXR joint around a simple
-target. **Stop webcam** releases the camera. The reach slider adjusts the
-estimated distance for different camera setups. Video stays in the browser.
+target. **Stop webcam** releases the camera. Moving a hand toward the webcam
+pushes its virtual hand toward the scene. The **Distance** slider shifts the
+virtual hands toward or away from the scene for different camera setups.
+Video stays in the browser.
 
 The demo is deliberately small: it shows the input source, not a complete XR
 room. Playtonik adds its own keyboard, orb, pinch cues, and interactions.

@@ -31,6 +31,16 @@ describe('webcam landmark mapping', () => {
     expect(near.joints[0].x).toBeLessThan(0);
     expect(far.joints[0].z).toBeLessThan(near.joints[0].z);
   });
+
+  it.each(['left', 'right'] as const)('moves a %s hand toward the scene when it approaches the webcam', (side) => {
+    const { image, world } = sample();
+    const distant = handFromLandmarks(side, image, world)!;
+    image[5].x = 0.3;
+    image[17].x = 0.7;
+    const nearCamera = handFromLandmarks(side, image, world)!;
+    expect(nearCamera.joints[0].z).toBeLessThan(distant.joints[0].z);
+    expect(nearCamera.joints[9].z).toBeLessThan(distant.joints[9].z);
+  });
 });
 
 it('smooths jitter, follows quick motion, and resets when tracking is lost', () => {

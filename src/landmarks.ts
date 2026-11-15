@@ -31,12 +31,13 @@ export function handFromLandmarks(
   if (image.length < 21 || world.length < 21) return null;
   const wrist = image[0];
   // A monocular webcam has no absolute depth. Apparent palm width supplies a
-  // bounded estimate; Reach is a manual offset for different camera setups.
+  // bounded camera-distance estimate. Moving toward the webcam must move the
+  // XR hand away from the viewer, toward the scene target.
   const apparentPalm = Math.hypot(image[5].x - image[17].x, image[5].y - image[17].y);
   const metricPalm = distance(world[5], world[17]);
   const estimatedDepth = metricPalm / Math.max(apparentPalm, 0.025) / (2 * Math.tan(Math.PI / 6));
-  const depth = Math.min(0.85, Math.max(0.25, estimatedDepth)) + reach;
-  const origin = { x: -(wrist.x - 0.5) * 1.15, y: 1.35 - (wrist.y - 0.5) * 0.85, z: -depth };
+  const cameraDistance = Math.min(0.85, Math.max(0.25, estimatedDepth));
+  const origin = { x: -(wrist.x - 0.5) * 1.15, y: 1.35 - (wrist.y - 0.5) * 0.85, z: cameraDistance - 1.1 - reach };
   const points = world.map((point) => ({
     x: origin.x - (point.x - world[0].x),
     y: origin.y - (point.y - world[0].y),

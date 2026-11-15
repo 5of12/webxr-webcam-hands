@@ -31,12 +31,15 @@ export function installWebcamXR(): WebcamXRDevice {
   reach.max = '0.35';
   reach.step = '0.01';
   reach.value = '0';
-  reach.title = 'Adjust hand reach';
-  reach.setAttribute('aria-label', 'Hand reach');
+  reach.title = 'Move virtual hands toward or away from the scene';
   reach.style.cssText = 'width:64px;accent-color:#fff;';
   reach.addEventListener('input', () => { camera.reach = Number(reach.value); });
+  const reachLabel = document.createElement('label');
+  reachLabel.textContent = 'Distance';
+  reachLabel.style.cssText = 'display:flex;align-items:center;gap:6px;';
+  reachLabel.append(reach);
   camera.video.style.cssText = 'display:none;width:100px;height:75px;object-fit:cover;border-radius:6px;transform:scaleX(-1);';
-  panel.append(button, status, reach, camera.video);
+  panel.append(button, status, reachLabel, camera.video);
   document.body.append(panel);
   camera.onError = () => {
     button.dataset.active = 'false';
