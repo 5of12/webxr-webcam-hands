@@ -4,6 +4,7 @@ test('synthetic joints become a WebXR hand in the standalone demo', async ({ pag
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
+  await expect(page.getByRole('link', { name: 'View source on GitHub' })).toHaveAttribute('href', 'https://github.com/5of12/webxr-webcam-hands');
   await expect(page.getByRole('slider', { name: 'Distance' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Enter VR' })).toHaveCount(0);
   await page.evaluate(async () => {
