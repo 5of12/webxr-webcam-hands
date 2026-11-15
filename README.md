@@ -45,7 +45,7 @@ to verify the source and the synthetic WebXR hand path.
 Install the tagged source from GitHub (or pin a specific commit for a locked build):
 
 ```sh
-npm install --save-dev 'git+https://github.com/5of12/webxr-webcam-hands.git#v0.1.1'
+npm install --save-dev 'git+https://github.com/5of12/webxr-webcam-hands.git#v0.1.2'
 ```
 
 Import `installWebcamXR()` before `World.create`. Use a separate desktop development mode that does not inject
