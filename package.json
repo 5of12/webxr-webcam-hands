@@ -21,6 +21,7 @@
     "test": "vitest run tests/landmarks.test.ts",
     "test:browser": "playwright test",
     "build": "vite build && npm run build:lib",
+    "build:pages": "vite build --base /webxr-webcam-hands/ --outDir dist-pages",
     "build:lib": "vite build --config vite.lib.config.ts && tsc -p tsconfig.lib.json"
   },
   "dependencies": {

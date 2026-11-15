@@ -11,6 +11,8 @@ and feeds joints through [Meta's IWER](https://github.com/meta-quest/immersive-w
 The app receives ordinary `XRInputSource.hand` data. No A-Frame or Threlte is
 required.
 
+**[Try the browser demo](https://5of12.co.uk/webxr-webcam-hands/)** — allow camera access, enter VR, and move your hands around the target. It runs over HTTPS and processes camera frames in your browser.
+
 Its first integration is
 [Playtonik](https://playtonik.cc/), built with IWSDK and Three.js. The first
 live-hand check worked well, and automated tests exercise the WebXR path with
@@ -18,7 +20,7 @@ synthetic joints. Broader camera and browser coverage is still to come.
 
 ## Try the demo
 
-Use Node 20.19+, 22.12+, or 24+ and a desktop browser with a webcam:
+Open the [hosted demo](https://5of12.co.uk/webxr-webcam-hands/), or run it locally with Node 20.19+, 22.12+, or 24+ and a desktop browser with a webcam:
 
 ```sh
 npm ci
