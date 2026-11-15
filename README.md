@@ -7,7 +7,7 @@ and feeds joints through [Meta's IWER](https://github.com/meta-quest/immersive-w
 The app receives ordinary `XRInputSource.hand` data. No A-Frame or Threlte is
 required.
 
-This repository is a **local publication candidate**. Its first integration is
+Its first integration is
 [Playtonik](https://playtonik.cc/), built with IWSDK and Three.js. The first
 live-hand check worked well, and automated tests exercise the WebXR path with
 synthetic joints. Broader camera and browser coverage is still to come.
@@ -29,10 +29,18 @@ estimated distance for different camera setups. Video stays in the browser.
 The demo is deliberately small: it shows the input source, not a complete XR
 room. Playtonik adds its own keyboard, orb, pinch cues, and interactions.
 
+Run `npm run check`, `npm test`, `npm run test:browser`, and `npm run build`
+to verify the source and the synthetic WebXR hand path.
+
 ## Use in an IWSDK app
 
-Install the exact versions used here, and import `installWebcamXR()` before
-`World.create`. Use a separate desktop development mode that does not inject
+Install the tagged source from GitHub (or pin a specific commit for a locked build):
+
+```sh
+npm install --save-dev 'git+https://github.com/5of12/webxr-webcam-hands.git#v0.1.0'
+```
+
+Import `installWebcamXR()` before `World.create`. Use a separate desktop development mode that does not inject
 another IWER runtime. See [the IWSDK setup example](docs/iwsdk.md). Native
 Quest and normal emulator paths can stay as they are.
 

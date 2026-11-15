@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "rootDir": "src",
+    "outDir": "lib/types"
+  },
+  "include": ["src/index.ts", "src/camera.ts", "src/iwer.ts", "src/landmarks.ts", "src/smoothing.ts"],
+  "exclude": ["src/demo.ts", "tests"]
+}

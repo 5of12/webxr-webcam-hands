@@ -7,7 +7,7 @@ emulator activates only on `localhost`.
 ```ts
 import { World } from '@iwsdk/core';
 import projectOptions from 'virtual:iwsdk-project';
-import { installWebcamXR } from './webcam-xr';
+import { installWebcamXR } from '@5of12/webxr-webcam-hands';
 
 const webcamMode = import.meta.env.DEV && import.meta.env.VITE_WEBCAM_XR === '1';
 if (webcamMode) installWebcamXR(); // before World.create
