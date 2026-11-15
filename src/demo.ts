@@ -24,14 +24,30 @@ const { scene, target } = createDemoScene(renderer);
 const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.01, 20);
 camera.position.set(0, 1.6, 0);
 
-const jointGeometry = new THREE.SphereGeometry(0.009, 8, 6);
+const jointGeometry = new THREE.SphereGeometry(0.011, 8, 6);
 const jointMaterials = [new THREE.MeshBasicMaterial({ color: 0x85d9ff }), new THREE.MeshBasicMaterial({ color: 0xffb5d6 })];
-const joints = jointMaterials.map((material) => JOINT_NAMES.map(() => {
-  const mesh = new THREE.Mesh(jointGeometry, material);
-  mesh.visible = false;
+const joints = jointMaterials.map(() => JOINT_NAMES.map(() => ({ position: new THREE.Vector3(), visible: false })));
+const handMeshes = jointMaterials.map((material, index) => {
+  const mesh = new THREE.InstancedMesh(jointGeometry, material, JOINT_NAMES.length);
+  mesh.name = `WebcamJoints${index === 0 ? 'Left' : 'Right'}`;
+  mesh.castShadow = true;
+  mesh.frustumCulled = false;
+  mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   scene.add(mesh);
   return mesh;
-}));
+});
+const jointTransform = new THREE.Object3D();
+function drawHand(index: number): void {
+  const mesh = handMeshes[index];
+  for (let i = 0; i < JOINT_NAMES.length; i += 1) {
+    const joint = joints[index][i];
+    jointTransform.position.copy(joint.position);
+    jointTransform.scale.setScalar(joint.visible ? 1 : 0);
+    jointTransform.updateMatrix();
+    mesh.setMatrixAt(i, jointTransform.matrix);
+  }
+  mesh.instanceMatrix.needsUpdate = true;
+}
 const pinchCues = jointMaterials.map((material) => {
   const ringMaterial = new THREE.MeshBasicMaterial({ color: material.color, transparent: true, opacity: 0.7, depthTest: false, depthWrite: false, side: THREE.DoubleSide });
   const ring = new THREE.Mesh(new THREE.RingGeometry(0.015, 0.022, 24), ringMaterial);
@@ -53,7 +69,10 @@ async function startPreview(): Promise<void> {
     status.textContent = '';
     status.setAttribute('hidden', '');
     session.addEventListener('end', () => {
-      for (const hand of joints) for (const joint of hand) joint.visible = false;
+      for (const [index, hand] of joints.entries()) {
+        for (const joint of hand) joint.visible = false;
+        drawHand(index);
+      }
       for (const cue of pinchCues) { cue.detector.update(null, null); cue.ring.visible = false; }
     });
   } catch (error) {
@@ -86,6 +105,7 @@ renderer.setAnimationLoop((time, frame) => {
           mesh.position.set(position.x, position.y, position.z);
         }
       }
+      drawHand(index);
       const cue = pinchCues[index];
       const indexTip = joints[index][9];
       const thumbTip = joints[index][4];
