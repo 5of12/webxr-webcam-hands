@@ -2,8 +2,6 @@ import * as THREE from 'three';
 import { installWebcamXR, JOINT_NAMES } from './index';
 import { DemoPinch } from './demo-pinch';
 
-installWebcamXR();
-
 document.body.style.cssText = 'margin:0;background:#0d0f13;color:#fff;font:15px system-ui;overflow:hidden';
 const main = document.querySelector('main')!;
 main.style.cssText = 'position:fixed;left:20px;top:16px;z-index:2;max-width:340px';
@@ -11,10 +9,9 @@ const title = main.querySelector('h1')!;
 title.style.cssText = 'font-size:20px;font-weight:600;margin:0 0 8px';
 const intro = main.querySelector('p')!;
 intro.style.cssText = 'color:#aeb6c1;line-height:1.5;margin:0 0 14px';
-const button = document.querySelector<HTMLButtonElement>('#enter-vr')!;
-button.style.cssText = 'border:0;border-radius:8px;padding:10px 14px;background:#fff;color:#111;font:inherit;cursor:pointer';
 const status = document.querySelector('#session-status')!;
 status.setAttribute('aria-live', 'polite');
+status.setAttribute('hidden', '');
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -52,25 +49,27 @@ const pinchCues = jointMaterials.map((material) => {
 });
 if (import.meta.env.DEV) (window as Window & { __demoPinches?: typeof pinchCues }).__demoPinches = pinchCues;
 
-button.addEventListener('click', async () => {
-  if (renderer.xr.isPresenting) {
-    await renderer.xr.getSession()?.end();
-    return;
-  }
+async function startPreview(): Promise<void> {
+  if (renderer.xr.isPresenting) return;
   try {
     const session = await navigator.xr!.requestSession('immersive-vr', { requiredFeatures: ['hand-tracking', 'local-floor'] });
     await renderer.xr.setSession(session);
-    button.textContent = 'Exit VR';
-    status.textContent = 'VR live';
+    status.textContent = '';
+    status.setAttribute('hidden', '');
     session.addEventListener('end', () => {
-      button.textContent = 'Enter VR';
-      status.textContent = 'Ready';
       for (const hand of joints) for (const joint of hand) joint.visible = false;
       for (const cue of pinchCues) { cue.detector.update(null, null); cue.ring.visible = false; }
     });
   } catch (error) {
-    status.textContent = error instanceof Error ? error.message : 'Could not enter VR';
+    status.textContent = 'Could not start the 3D preview';
+    status.removeAttribute('hidden');
+    console.warn('[webcam-xr] Could not start 3D preview', error);
   }
+}
+
+installWebcamXR({
+  onStarted: () => { void startPreview(); },
+  onStopped: () => { void renderer.xr.getSession()?.end(); },
 });
 
 renderer.setAnimationLoop((_time, frame) => {

@@ -5,8 +5,16 @@ test('synthetic joints become a WebXR hand in the standalone demo', async ({ pag
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
   await expect(page.getByRole('slider', { name: 'Distance' })).toBeVisible();
-  await page.getByRole('button', { name: 'Enter VR' }).click();
-  await expect(page.locator('#session-status')).toHaveText('VR live');
+  await expect(page.getByRole('button', { name: 'Enter VR' })).toHaveCount(0);
+  await page.evaluate(async () => {
+    const cameraModule = '/src/camera.ts';
+    const { WebcamHands } = await import(cameraModule);
+    WebcamHands.prototype.start = async () => {};
+  });
+  await page.getByRole('button', { name: 'Start webcam' }).click();
+  await expect.poll(() => page.evaluate(() => !!(window as Window & {
+    __webcamXR?: { device: { activeSession?: XRSession } };
+  }).__webcamXR?.device.activeSession)).toBe(true);
 
   await page.evaluate(() => {
     const xr = (window as Window & { __webcamXR?: {
@@ -33,5 +41,9 @@ test('synthetic joints become a WebXR hand in the standalone demo', async ({ pag
   await expect.poll(() => page.evaluate(() => (window as Window & {
     __demoPinches?: { detector: { pinched: boolean }; ring: { visible: boolean } }[];
   }).__demoPinches?.every((cue) => !cue.detector.pinched && !cue.ring.visible))).toBe(true);
+  await page.getByRole('button', { name: 'Stop webcam' }).click();
+  await expect.poll(() => page.evaluate(() => !(window as Window & {
+    __webcamXR?: { device: { activeSession?: XRSession } };
+  }).__webcamXR?.device.activeSession)).toBe(true);
   expect(errors).toEqual([]);
 });

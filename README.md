@@ -11,7 +11,7 @@ and feeds joints through [Meta's IWER](https://github.com/meta-quest/immersive-w
 The app receives ordinary `XRInputSource.hand` data. No A-Frame or Threlte is
 required.
 
-**[Try the browser demo](https://5of12.co.uk/webxr-webcam-hands/)** — allow camera access, enter VR, and move your hands around the target. It runs over HTTPS and processes camera frames in your browser.
+**[Try the browser demo](https://5of12.co.uk/webxr-webcam-hands/)** — start the webcam and move your hands around the target. The 3D WebXR preview starts automatically. It runs over HTTPS and processes camera frames in your browser.
 
 Its first integration is
 [Playtonik](https://playtonik.cc/), built with IWSDK and Three.js. The first
@@ -27,8 +27,8 @@ npm ci
 npm run dev
 ```
 
-Open `http://127.0.0.1:5174/`. Click **Start webcam**, allow camera access,
-then **Enter VR**. The demo draws each tracked WebXR joint around a simple
+Open `http://127.0.0.1:5174/`. Click **Start webcam** and allow camera access.
+The demo opens its WebXR preview and draws each tracked joint around a simple
 target. **Stop webcam** releases the camera. Moving a hand toward the webcam
 pushes its virtual hand toward the scene. The **Distance** slider shifts the
 virtual hands toward or away from the scene for different camera setups.
@@ -48,7 +48,7 @@ to verify the source and the synthetic WebXR hand path.
 Install the tagged source from GitHub (or pin a specific commit for a locked build):
 
 ```sh
-npm install --save-dev 'git+https://github.com/5of12/webxr-webcam-hands.git#v0.1.2'
+npm install --save-dev 'git+https://github.com/5of12/webxr-webcam-hands.git#v0.1.3'
 ```
 
 Import `installWebcamXR()` before `World.create`. Use a separate desktop development mode that does not inject

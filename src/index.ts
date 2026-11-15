@@ -3,7 +3,12 @@ import { WebcamHands } from './camera';
 import { WebcamXRDevice } from './iwer';
 import { HandSmoother } from './smoothing';
 
-export function installWebcamXR(): WebcamXRDevice {
+export type WebcamXRHooks = {
+  onStarted?: () => void;
+  onStopped?: () => void;
+};
+
+export function installWebcamXR(hooks: WebcamXRHooks = {}): WebcamXRDevice {
   document.documentElement.dataset.webcamXr = 'true';
   const xr = new WebcamXRDevice();
   const camera = new WebcamHands();
@@ -46,6 +51,7 @@ export function installWebcamXR(): WebcamXRDevice {
     button.textContent = 'Start webcam';
     camera.video.style.display = 'none';
     status.textContent = 'Tracking stopped';
+    hooks.onStopped?.();
   };
 
   let starting = false;
@@ -58,6 +64,7 @@ export function installWebcamXR(): WebcamXRDevice {
       button.textContent = 'Start webcam';
       camera.video.style.display = 'none';
       status.textContent = 'Off';
+      hooks.onStopped?.();
       return;
     }
     starting = true;
@@ -69,6 +76,7 @@ export function installWebcamXR(): WebcamXRDevice {
       button.textContent = 'Stop webcam';
       camera.video.style.display = 'block';
       status.textContent = 'No hands';
+      hooks.onStarted?.();
     } catch (error) {
       status.textContent = error instanceof DOMException && error.name === 'NotAllowedError' ? 'Camera denied' : 'Unavailable';
       console.warn('[webcam-xr] Could not start camera', error);
