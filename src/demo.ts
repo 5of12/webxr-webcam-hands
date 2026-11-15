@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { installWebcamXR, JOINT_NAMES } from './index';
 import { DemoPinch } from './demo-pinch';
+import { createDemoScene } from './demo-scene';
 
 document.body.style.cssText = 'margin:0;background:#0d0f13;color:#fff;font:15px system-ui;overflow:hidden';
 const main = document.querySelector('main')!;
@@ -19,17 +20,9 @@ renderer.xr.enabled = true;
 renderer.xr.setReferenceSpaceType('local-floor');
 document.body.append(renderer.domElement);
 
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0d0f13);
+const { scene, target } = createDemoScene(renderer);
 const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.01, 20);
 camera.position.set(0, 1.6, 0);
-scene.add(new THREE.GridHelper(4, 16, 0x56606d, 0x29313a));
-const target = new THREE.Mesh(
-  new THREE.IcosahedronGeometry(0.18, 1),
-  new THREE.MeshNormalMaterial({ wireframe: true }),
-);
-target.position.set(0, 1.35, -0.6);
-scene.add(target);
 
 const jointGeometry = new THREE.SphereGeometry(0.009, 8, 6);
 const jointMaterials = [new THREE.MeshBasicMaterial({ color: 0x85d9ff }), new THREE.MeshBasicMaterial({ color: 0xffb5d6 })];
@@ -48,6 +41,9 @@ const pinchCues = jointMaterials.map((material) => {
   return { detector: new DemoPinch(), ring, lastPinched: false };
 });
 if (import.meta.env.DEV) (window as Window & { __demoPinches?: typeof pinchCues }).__demoPinches = pinchCues;
+if (import.meta.env.DEV) (window as Window & { __demoTarget?: typeof target }).__demoTarget = target;
+const pinchPoints: (THREE.Vector3 | null)[] = [null, null];
+let lastFrameTime = 0;
 
 async function startPreview(): Promise<void> {
   if (renderer.xr.isPresenting) return;
@@ -72,7 +68,10 @@ installWebcamXR({
   onStopped: () => { void renderer.xr.getSession()?.end(); },
 });
 
-renderer.setAnimationLoop((_time, frame) => {
+renderer.setAnimationLoop((time, frame) => {
+  const dt = lastFrameTime ? (time - lastFrameTime) / 1000 : 0;
+  lastFrameTime = time;
+  pinchPoints[0] = pinchPoints[1] = null;
   if (frame) {
     const referenceSpace = renderer.xr.getReferenceSpace();
     for (const [index, side] of ['left', 'right'].entries()) {
@@ -96,10 +95,12 @@ renderer.setAnimationLoop((_time, frame) => {
         cue.ring.position.copy(indexTip.position).add(thumbTip.position).multiplyScalar(0.5);
         renderer.xr.getCamera().getWorldQuaternion(cue.ring.quaternion);
         cue.ring.scale.setScalar(cue.lastPinched ? 1 : 1.4);
+        pinchPoints[index] = cue.ring.position;
       }
       cue.lastPinched = pinched;
     }
   }
+  target.update(dt, pinchPoints);
   renderer.render(scene, camera);
 });
 

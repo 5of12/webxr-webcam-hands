@@ -28,8 +28,10 @@ npm run dev
 ```
 
 Open `http://127.0.0.1:5174/`. Click **Start webcam** and allow camera access.
-The demo opens its WebXR preview and draws each tracked joint around a simple
-target. **Stop webcam** releases the camera. Moving a hand toward the webcam
+The demo opens its WebXR preview and draws each tracked joint around a slowly
+turning shape. Pinch near the shape and move your hand to rotate it; it keeps
+spinning briefly on release. A light casts its shadow onto the floor below.
+**Stop webcam** releases the camera. Moving a hand toward the webcam
 pushes its virtual hand toward the scene. The **Distance** slider shifts the
 virtual hands toward or away from the scene for different camera setups.
 Closing your thumb and index finger shows a small ring at the pinch point;
