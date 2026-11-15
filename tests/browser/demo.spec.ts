@@ -62,3 +62,23 @@ test('synthetic joints become a WebXR hand in the standalone demo', async ({ pag
   }).__webcamXR?.device.activeSession)).toBe(true);
   expect(errors).toEqual([]);
 });
+
+test('mobile camera controls stay above the scene', async ({ page }) => {
+  await page.setViewportSize({ width: 393, height: 852 });
+  await page.goto('/');
+  await page.evaluate(async () => {
+    const cameraModule = '/src/camera.ts';
+    const { WebcamHands } = await import(cameraModule);
+    WebcamHands.prototype.start = async () => {};
+  });
+  await page.getByRole('button', { name: 'Start webcam' }).click();
+  await expect(page.getByRole('button', { name: 'Stop webcam' })).toBeVisible();
+  const panel = await page.getByLabel('Webcam hand tracking').boundingBox();
+  const main = await page.locator('main').boundingBox();
+  expect(panel).not.toBeNull();
+  expect(main).not.toBeNull();
+  expect(panel!.y + panel!.height).toBeLessThan(main!.y);
+  expect(panel!.y + panel!.height).toBeLessThan(180);
+  expect(panel!.x).toBeGreaterThanOrEqual(0);
+  expect(panel!.x + panel!.width).toBeLessThanOrEqual(393);
+});
