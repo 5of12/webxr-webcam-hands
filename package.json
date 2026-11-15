@@ -1,6 +1,6 @@
 {
   "name": "@5of12/webxr-webcam-hands",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "exports": {
@@ -9,7 +9,11 @@
       "import": "./lib/index.js"
     }
   },
-  "files": ["lib", "README.md", "LICENSE"],
+  "files": [
+    "lib",
+    "README.md",
+    "LICENSE"
+  ],
   "description": "Development-only webcam hand input through MediaPipe and IWER",
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5174 --strictPort",
