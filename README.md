@@ -1,8 +1,8 @@
 # WebXR webcam hands
 
-![A synthetic WebXR hand reaching toward Playtonik’s orb in VR](docs/images/playtonik-synthetic-hand.webp)
+![Live webcam tracking two hands in Playtonik, with the camera preview beside the WebXR scene](docs/images/playtonik-live-webcam-hands.png)
 
-*Playtonik receiving an articulated WebXR hand. This capture uses synthetic joint positions to test the integration and orb target cue; it is not a live webcam photograph.*
+*Live webcam tracking in Playtonik: the camera preview shows two hands, while articulated WebXR hands appear around the orb.*
 
 A desktop development tool that turns webcam hand tracking into articulated
 WebXR input sources. It adapts the hand mapping from
@@ -15,8 +15,6 @@ Its first integration is
 [Playtonik](https://playtonik.cc/), built with IWSDK and Three.js. The first
 live-hand check worked well, and automated tests exercise the WebXR path with
 synthetic joints. Broader camera and browser coverage is still to come.
-
-![Webcam video flows through MediaPipe landmarks and IWER joints into a WebXR app](docs/images/how-it-works.svg)
 
 ## Try the demo
 
