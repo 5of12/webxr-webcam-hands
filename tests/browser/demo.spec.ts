@@ -14,14 +14,24 @@ test('synthetic joints become a WebXR hand in the standalone demo', async ({ pag
       device: { activeSession?: XRSession };
     } }).__webcamXR!;
     const joints = Array.from({ length: 25 }, (_, i) => ({ x: (i % 5) * 0.025, y: 1.25 + Math.floor(i / 5) * 0.035, z: -0.45 }));
-    xr.setHands([{ handedness: 'left', joints, radius: 0.01 }]);
+    joints[4] = { ...joints[9], x: joints[9].x + 0.01 };
+    xr.setHands([
+      { handedness: 'left', joints, radius: 0.01 },
+      { handedness: 'right', joints: joints.map((joint) => ({ ...joint, x: joint.x + 0.2 })), radius: 0.01 },
+    ]);
   });
   await expect.poll(() => page.evaluate(() => (window as Window & { __webcamXR?: {
     device: { activeSession?: XRSession };
-  } }).__webcamXR!.device.activeSession?.inputSources.length)).toBe(1);
+  } }).__webcamXR!.device.activeSession?.inputSources.length)).toBe(2);
+  await expect.poll(() => page.evaluate(() => (window as Window & {
+    __demoPinches?: { detector: { pinched: boolean }; ring: { visible: boolean } }[];
+  }).__demoPinches?.every((cue) => cue.detector.pinched && cue.ring.visible))).toBe(true);
   await page.evaluate(() => (window as Window & { __webcamXR?: { setHands: (hands: unknown[]) => void } }).__webcamXR!.setHands([]));
   await expect.poll(() => page.evaluate(() => (window as Window & { __webcamXR?: {
     device: { activeSession?: XRSession };
   } }).__webcamXR!.device.activeSession?.inputSources.length)).toBe(0);
+  await expect.poll(() => page.evaluate(() => (window as Window & {
+    __demoPinches?: { detector: { pinched: boolean }; ring: { visible: boolean } }[];
+  }).__demoPinches?.every((cue) => !cue.detector.pinched && !cue.ring.visible))).toBe(true);
   expect(errors).toEqual([]);
 });

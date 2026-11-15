@@ -32,7 +32,10 @@ then **Enter VR**. The demo draws each tracked WebXR joint around a simple
 target. **Stop webcam** releases the camera. Moving a hand toward the webcam
 pushes its virtual hand toward the scene. The **Distance** slider shifts the
 virtual hands toward or away from the scene for different camera setups.
-Video stays in the browser.
+Closing your thumb and index finger shows a small ring at the pinch point;
+the demo uses Playtonik’s 2 cm pinch-on and 3.5 cm pinch-off thresholds. It
+does not play Playtonik’s notes or implement its orb targeting. Video stays
+in the browser.
 
 The demo is deliberately small: it shows the input source, not a complete XR
 room. Playtonik adds its own keyboard, orb, pinch cues, and interactions.

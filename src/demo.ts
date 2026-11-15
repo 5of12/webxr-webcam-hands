@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { installWebcamXR, JOINT_NAMES } from './index';
+import { DemoPinch } from './demo-pinch';
 
 installWebcamXR();
 
@@ -41,6 +42,15 @@ const joints = jointMaterials.map((material) => JOINT_NAMES.map(() => {
   scene.add(mesh);
   return mesh;
 }));
+const pinchCues = jointMaterials.map((material) => {
+  const ringMaterial = new THREE.MeshBasicMaterial({ color: material.color, transparent: true, opacity: 0.7, depthTest: false, depthWrite: false, side: THREE.DoubleSide });
+  const ring = new THREE.Mesh(new THREE.RingGeometry(0.015, 0.022, 24), ringMaterial);
+  ring.visible = false;
+  ring.renderOrder = 10;
+  scene.add(ring);
+  return { detector: new DemoPinch(), ring, lastPinched: false };
+});
+if (import.meta.env.DEV) (window as Window & { __demoPinches?: typeof pinchCues }).__demoPinches = pinchCues;
 
 button.addEventListener('click', async () => {
   if (renderer.xr.isPresenting) {
@@ -56,6 +66,7 @@ button.addEventListener('click', async () => {
       button.textContent = 'Enter VR';
       status.textContent = 'Ready';
       for (const hand of joints) for (const joint of hand) joint.visible = false;
+      for (const cue of pinchCues) { cue.detector.update(null, null); cue.ring.visible = false; }
     });
   } catch (error) {
     status.textContent = error instanceof Error ? error.message : 'Could not enter VR';
@@ -77,6 +88,17 @@ renderer.setAnimationLoop((_time, frame) => {
           mesh.position.set(position.x, position.y, position.z);
         }
       }
+      const cue = pinchCues[index];
+      const indexTip = joints[index][9];
+      const thumbTip = joints[index][4];
+      const pinched = cue.detector.update(indexTip.visible ? indexTip.position : null, thumbTip.visible ? thumbTip.position : null);
+      cue.ring.visible = pinched;
+      if (pinched) {
+        cue.ring.position.copy(indexTip.position).add(thumbTip.position).multiplyScalar(0.5);
+        renderer.xr.getCamera().getWorldQuaternion(cue.ring.quaternion);
+        cue.ring.scale.setScalar(cue.lastPinched ? 1 : 1.4);
+      }
+      cue.lastPinched = pinched;
     }
   }
   renderer.render(scene, camera);
